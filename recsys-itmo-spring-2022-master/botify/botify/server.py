@@ -67,7 +67,7 @@ class NextTrack(Resource):
 
         treatment = Experiments.RECOMMENDERS.assign(user)
         if treatment == Treatment.My:
-            recommender = Special(tracks_redis.connection, artists_redis.connection, catalog, catalog.top_artists[:10])
+            recommender = Special(tracks_redis.connection, artists_redis.connection, catalog, catalog.top_tracks[:10])
         elif treatment == Treatment.T2:
             recommender = Contextual(
                 tracks_redis.connection, catalog

@@ -13,21 +13,26 @@ class Special(Recommender):
         self.catalog = catalog
 
         self.random = Random(tracks_redis)
-        self.top_singers = top_singers
+        #self.top_singers = top_singers
+        self.top_tracks = top_singers
 
     def recommend_next(self, user: int, prev_track: int, prev_track_time: float) -> int:
 
-        if self.top_singers and (prev_track_time < 0.4):
-            shuffled = list(self.top_singers)
+        
+        if self.top_tracks and (prev_track_time < 0.4):
+            shuffled = list(self.top_tracks)
             random.shuffle(shuffled)
-            artist_data = self.artists_redis.get( shuffled[0])
+            return shuffled[0]
+            #shuffled = list(self.top_singers)
+            #random.shuffle(shuffled)
+            #artist_data = self.artists_redis.get( shuffled[0])
 
-            if artist_data is not None:
-                artist_tracks = self.catalog.from_bytes(artist_data)
-            else:
-                return self.random.recommend_next(user, prev_track, prev_track_time)
-            index = random.randint(0, len(artist_tracks) - 1)
-            return artist_tracks[index]
+            #if artist_data is not None:
+            #    artist_tracks = self.catalog.from_bytes(artist_data)
+            #else:
+            #    return self.random.recommend_next(user, prev_track, prev_track_time)
+            #index = random.randint(0, len(artist_tracks) - 1)
+            #return artist_tracks[index]
 
 
         track_data = self.tracks_redis.get(prev_track)
