@@ -23,8 +23,9 @@ class Catalog:
         self.app = app
         self.tracks = []
         self.top_tracks = []
+        self.top_artists = []
 
-    def load(self, catalog_path, top_tracks_path):
+    def load(self, catalog_path, top_tracks_path, top_artists_path):
         self.app.logger.info(f"Loading tracks from {catalog_path}")
         with open(catalog_path) as catalog_file:
             for j, line in enumerate(catalog_file):
@@ -40,9 +41,13 @@ class Catalog:
         self.app.logger.info(f"Loaded {j+1} tracks")
 
         self.app.logger.info(f"Loading top tracks from {top_tracks_path}")
+        self.app.logger.info(f"Loading top artists from {top_artists_path}")
         with open(top_tracks_path) as top_tracks_path_file:
             self.top_tracks = json.load(top_tracks_path_file)
+        with open(top_artists_path) as top_tracks_path_file:
+            self.top_artists = json.load(top_tracks_path_file)
         self.app.logger.info(f"Loaded top tracks {self.top_tracks[:3]} ...")
+        self.app.logger.info(f"Loaded top artists {self.top_artists[:3]} ...")
 
         return self
 
@@ -56,7 +61,7 @@ class Catalog:
         self.app.logger.info(f"Uploading artists to redis")
         sorted_tracks = sorted(self.tracks, key=lambda t: t.artist)
         for j, (artist, artist_catalog) in enumerate(
-            itertools.groupby(sorted_tracks, key=lambda t: t.artist)
+                itertools.groupby(sorted_tracks, key=lambda t: t.artist)
         ):
             artist_tracks = [t.track for t in artist_catalog]
             redis.set(artist, self.to_bytes(artist_tracks))
@@ -74,6 +79,7 @@ class Catalog:
                 )
                 j += 1
         self.app.logger.info(f"Uploaded recommendations for {j} users")
+
 
     def to_bytes(self, instance):
         return pickle.dumps(instance)

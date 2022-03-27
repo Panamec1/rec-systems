@@ -31,7 +31,7 @@ recommendations_redis = Redis(app, config_prefix="REDIS_RECOMMENDATIONS")
 data_logger = DataLogger(app)
 
 catalog = Catalog(app).load(
-    app.config["TRACKS_CATALOG"], app.config["TOP_TRACKS_CATALOG"]
+    app.config["TRACKS_CATALOG"], app.config["TOP_TRACKS_CATALOG"], app.config["TOP_SINGERS"]
 )
 catalog.upload_tracks(tracks_redis.connection)
 catalog.upload_artists(artists_redis.connection)
@@ -67,7 +67,7 @@ class NextTrack(Resource):
 
         treatment = Experiments.RECOMMENDERS.assign(user)
         if treatment == Treatment.My:
-            recommender = Special(tracks_redis.connection, artists_redis.connection, catalog, catalog.top_tracks[:10])
+            recommender = Special(tracks_redis.connection, artists_redis.connection, catalog, catalog.top_artists[:10])
         elif treatment == Treatment.T2:
             recommender = Contextual(
                 tracks_redis.connection, catalog
@@ -90,7 +90,7 @@ class NextTrack(Resource):
                 args.time,
                 time.time() - start,
                 recommendation,
-            ),
+                ),
         )
         return {"user": user, "track": recommendation}
 
@@ -107,7 +107,7 @@ class LastTrack(Resource):
                 args.track,
                 args.time,
                 time.time() - start,
-            ),
+                ),
         )
         return {"user": user}
 

@@ -44,5 +44,5 @@ curl -H "Content-Type: application/json" -X POST -d '{"track":10,"time":0.3}'  h
 ```
 Скачиваем логи пользовательских сессии с контейнера
 ```
-docker cp recommender-container:/app/log/ /tmp/
+docker cp recommender-container:/app/log/ ~/Desktop/log/
 ```
